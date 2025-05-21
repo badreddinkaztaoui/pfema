@@ -1,0 +1,19 @@
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        poppins: ['var(--font-poppins)'],
+        inter: ['var(--font-inter)'],
+        carrois: ['var(--font-carrois)'],
+        playwrite: ['Playwrite Danmark Loopet', 'cursive'],
+      },
+    },
+  },
+  plugins: [],
+};
