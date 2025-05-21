@@ -105,9 +105,9 @@ export const Services = () => {
           <h2 className="text-4xl font-bold text-white mb-6">
             <span className="block">Nos Services</span>
           </h2>
-          <p className="text-blue-300 text-xl mb-3">Kifach ghadi n7awlo l'idée dyalek l'projet kammel</p>
+          <p className="text-blue-300 text-xl mb-3">Kifach ghadi n7awlo l&apos;idée dyalek l&apos;projet kammel</p>
           <p className="text-gray-400 text-sm">
-            (On t'aide à cadrer ton idée pour un projet solide dès le départ.)
+            (On t&apos;aide à cadrer ton idée pour un projet solide dès le départ.)
           </p>
         </div>
 

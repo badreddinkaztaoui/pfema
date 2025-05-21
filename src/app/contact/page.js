@@ -69,7 +69,7 @@ export default function ContactPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800/50 backdrop-blur-sm text-gray-300 hover:text-white border border-gray-700/50 hover:border-blue-500/30 transition-all duration-300"
         >
           <ArrowLeftIcon className="w-5 h-5" />
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </button>
       </div>
 

@@ -115,7 +115,7 @@ export const Hero = () => {
             <span className="block text-white text-3xl lg:text-8xl playwrite-dk-loopet-100">PFEMA</span>
           </h1>
           <p className="text-xl lg:text-2xl mb-10 text-gray-100 font-inter max-w-2xl mx-auto">
-            <span className="block">On est là pour t'accompagner jusqu'à la réussite de ton projet.</span>
+            <span className="block">On est là pour t&apos;accompagner jusqu&apos;à la réussite de ton projet.</span>
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5">
             <button onClick={() => scrollToSection('contact')} className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-8 py-4 rounded-full text-lg font-medium transition-all duration-300 hover:shadow-xl hover:translate-y-[-2px] font-carrois">

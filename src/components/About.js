@@ -97,7 +97,7 @@ export const About = () => {
 
             <div className="space-y-6">
               <p className="text-xl mb-6 text-gray-300">
-              Hna une équipe dyal lesjeunes passionnés par l'innovation et la technologie.
+              Hna une équipe dyal lesjeunes passionnés par l&apos;innovation et la technologie.
                 Nous sommes là pour transformer vos idées en réalité.
               </p>
 
@@ -130,7 +130,7 @@ export const About = () => {
             >
               <div>
                 <div className="text-3xl font-bold text-blue-400 mb-1">5+</div>
-                <div className="text-sm text-gray-400">Années d'expérience</div>
+                <div className="text-sm text-gray-400">Années d&apos;expérience</div>
               </div>
               <div>
                 <div className="text-3xl font-bold text-blue-400 mb-1">50+</div>

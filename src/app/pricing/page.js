@@ -137,7 +137,7 @@ export default function PricingPage() {
           className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800/50 backdrop-blur-sm text-gray-300 hover:text-white border border-gray-700/50 hover:border-blue-500/30 transition-all duration-300"
         >
           <ArrowLeftIcon className="w-5 h-5" />
-          Retour à l'accueil
+          Retour à l&apos;accueil
         </button>
       </div>
 
@@ -161,7 +161,7 @@ export default function PricingPage() {
             Choisissez le plan qui vous convient
           </p>
           <p className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-300">
-            Sélectionnez le plan parfait qui correspond à vos besoins et à votre budget. Tous les plans incluent notre engagement envers la qualité et l'excellence.
+            Sélectionnez le plan parfait qui correspond à vos besoins et à votre budget. Tous les plans incluent notre engagement envers la qualité et l&apos;excellence.
           </p>
         </div>
 
