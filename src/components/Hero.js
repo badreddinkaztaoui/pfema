@@ -9,6 +9,12 @@ import { useRouter } from 'next/navigation';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const avatars = [
+  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://plus.unsplash.com/premium_photo-1670884442192-7b58d513cd55?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  "https://images.unsplash.com/photo-1701615004837-40d8573b6652?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+]
+
 export const Hero = () => {
   const heroRef = useRef(null);
   const textRef = useRef(null);
@@ -331,8 +337,8 @@ export const Hero = () => {
                 Bienvenue chez
               </span>
               <span className="block relative">
-                <span className="text-white playwrite-dk-loopet-100 relative z-10">PFEMA</span>
-                <div className="absolute inset-0 text-blue-400/20 playwrite-dk-loopet-100 transform translate-x-2 translate-y-2 -z-10">PFEMA</div>
+                <span className="text-white font-carrois relative z-10">PFEMA</span>
+                <div className="absolute inset-0 text-blue-400/20 font-carrois transform translate-x-2 translate-y-2 -z-10">PFEMA</div>
               </span>
             </h1>
           </div>
@@ -389,8 +395,10 @@ export const Hero = () => {
           <div className="flex items-center justify-center space-x-8 text-gray-400 text-sm">
             <div className="flex items-center space-x-2">
               <div className="flex -space-x-2">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full border-2 border-white/20" />
+                {[...Array(avatars.length)].map((_, i) => (
+                  <div key={i} className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full border-2 border-white/20">
+                    <Image className="rounded-full w-full h-full object-cover" src={avatars[i]} alt="Client" width={50} height={50} />
+                  </div>
                 ))}
               </div>
               <span>500+ clients satisfaits</span>
