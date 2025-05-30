@@ -70,11 +70,15 @@ export const metadata = {
   },
 };
 
+import EmailJsProvider from '@/components/EmailJsProvider';
+
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className={`${poppins.variable} ${inter.variable} ${carrois.variable} font-sans`}>
-        {children}
+        <EmailJsProvider>
+          {children}
+        </EmailJsProvider>
       </body>
     </html>
   );

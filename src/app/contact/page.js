@@ -1,10 +1,11 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
+import emailjs from 'emailjs-com';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,6 +14,16 @@ export default function ContactPage() {
   const headerRef = useRef(null);
   const formRef = useRef(null);
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [status, setStatus] = useState({
+    submitted: false,
+    submitting: false,
+    info: { error: false, msg: null }
+  });
 
   const handleWhatsAppClick = () => {
     const phoneNumber = '212694019452'; // Replace with your actual WhatsApp number
@@ -23,6 +34,55 @@ export default function ContactPage() {
 
   const handleBackToHome = () => {
     router.push('/');
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setStatus(prevStatus => ({ ...prevStatus, submitting: true }));
+
+    const serviceId = process.env.EMAILJS_SERVICE_ID;
+    const templateId = process.env.EMAILJS_TEMPLATE_ID;
+    const userId = process.env.EMAILJS_USER_ID;
+
+    const templateParams = {
+      from_name: formData.name,
+      from_email: formData.email,
+      message: formData.message
+    };
+
+    emailjs.send(serviceId, templateId, templateParams, userId)
+      .then(response => {
+        console.log('SUCCESS!', response.status, response.text);
+        setFormData({ name: '', email: '', message: '' });
+        setStatus({
+          submitted: true,
+          submitting: false,
+          info: { error: false, msg: 'Message envoyé avec succès!' }
+        });
+        setTimeout(() => {
+          setStatus({
+            submitted: false,
+            submitting: false,
+            info: { error: false, msg: null }
+          });
+        }, 5000);
+      })
+      .catch(error => {
+        console.log('FAILED...', error);
+        setStatus({
+          submitted: false,
+          submitting: false,
+          info: { error: true, msg: 'Une erreur est survenue. Veuillez réessayer.' }
+        });
+      });
   };
 
   useEffect(() => {
@@ -99,7 +159,17 @@ export default function ContactPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-4xl mx-auto">
           {/* Contact Form */}
           <div ref={formRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              {status.info.error && (
+                <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
+                  {status.info.msg}
+                </div>
+              )}
+              {status.submitted && !status.info.error && (
+                <div className="p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-300 text-sm">
+                  {status.info.msg}
+                </div>
+              )}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-300">
                   Nom complet
@@ -108,8 +178,11 @@ export default function ContactPage() {
                   type="text"
                   name="name"
                   id="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
                   className="mt-2 block w-full rounded-lg bg-gray-900/50 border border-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Votre nom"
+                  required
                 />
               </div>
 
@@ -121,8 +194,11 @@ export default function ContactPage() {
                   type="email"
                   name="email"
                   id="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
                   className="mt-2 block w-full rounded-lg bg-gray-900/50 border border-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="votre@email.com"
+                  required
                 />
               </div>
 
@@ -134,16 +210,20 @@ export default function ContactPage() {
                   id="message"
                   name="message"
                   rows={4}
+                  value={formData.message}
+                  onChange={handleInputChange}
                   className="mt-2 block w-full rounded-lg bg-gray-900/50 border border-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
                   placeholder="Décrivez votre projet..."
+                  required
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px]"
+                disabled={status.submitting}
+                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px] disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                Envoyer le message
+                {status.submitting ? 'Envoi en cours...' : 'Envoyer le message'}
               </button>
             </form>
           </div>

@@ -13,7 +13,6 @@ export const Contact = () => {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading and intro text animation
       gsap.from(contentRef.current.children, {
         y: 30,
         opacity: 0,
@@ -27,7 +26,6 @@ export const Contact = () => {
         }
       });
 
-      // Cards animation
       cardsRef.current.forEach((card, index) => {
         gsap.from(card, {
           y: 40,
@@ -48,7 +46,7 @@ export const Contact = () => {
   }, []);
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '212694019452'; // Replace with your actual WhatsApp number
+    const phoneNumber = '212694019452';
     const message = 'Bonjour, je suis intéressé par vos services.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
@@ -60,21 +58,19 @@ export const Contact = () => {
       ref={contactRef}
       className="relative py-28 bg-gradient-to-b from-blue-950 via-indigo-950 to-purple-950 overflow-hidden"
     >
-      {/* Abstract background shapes */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full"
-             style={{
-               backgroundImage: 'radial-gradient(circle at 15% 85%, rgba(59, 130, 246, 0.2) 0%, transparent 40%)',
-             }}
+          style={{
+            backgroundImage: 'radial-gradient(circle at 15% 85%, rgba(59, 130, 246, 0.2) 0%, transparent 40%)',
+          }}
         />
         <div className="absolute top-0 right-0 w-full h-full"
-             style={{
-               backgroundImage: 'radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.2) 0%, transparent 40%)',
-             }}
+          style={{
+            backgroundImage: 'radial-gradient(circle at 85% 25%, rgba(139, 92, 246, 0.2) 0%, transparent 40%)',
+          }}
         />
       </div>
 
-      {/* Floating elements */}
       <div className="absolute top-20 left-10 w-20 h-20 rounded-full bg-blue-500/5 blur-2xl" />
       <div className="absolute bottom-20 right-10 w-48 h-48 rounded-full bg-purple-500/5 blur-3xl" />
       <div className="absolute top-1/2 -translate-y-1/2 -left-12 w-24 h-80 bg-gradient-to-b from-blue-400/10 to-transparent blur-2xl rounded-full" />

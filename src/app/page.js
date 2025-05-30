@@ -15,7 +15,6 @@ export default function Home() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Initial page load animation
       gsap.from('main', {
         opacity: 0,
         duration: 1,
