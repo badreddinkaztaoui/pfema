@@ -5,7 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useRouter } from 'next/navigation';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import emailjs from 'emailjs-com';
+import emailjs from '@emailjs/browser';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -26,8 +26,8 @@ export default function ContactPage() {
   });
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '212694019452'; // Replace with your actual WhatsApp number
-    const message = 'Bonjour, je suis intéressé par vos services.';
+    const phoneNumber = '212694019452';
+    const message = 'Bonjour, je souhaiterais obtenir plus d\'informations sur vos services.';
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -44,29 +44,45 @@ export default function ContactPage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus(prevStatus => ({ ...prevStatus, submitting: true }));
 
-    const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-    const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-    const userId = process.env.NEXT_PUBLIC_EMAILJS_USER_ID;
+    try {
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+      const userId = process.env.NEXT_PUBLIC_EMAILJS_USER_ID;
 
-    const templateParams = {
-      from_name: formData.name,
-      from_email: formData.email,
-      message: formData.message
-    };
+      const templateParams = {
+        from_name: formData.name.trim(),
+        from_email: formData.email.trim(),
+        message: formData.message.trim(),
+        timestamp: new Date().toLocaleString('fr-FR', {
+          timeZone: 'Africa/Casablanca',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        }),
+        subject: `Nouveau message de ${formData.name}`,
+        reply_to: formData.email.trim(),
+        source: 'PFEMA - Formulaire de Contact',
+        priority: 'normal',
+        user_agent: navigator.userAgent,
+        page_url: window.location.href
+      };
 
-    emailjs.send(serviceId, templateId, templateParams, userId)
-      .then(response => {
-        console.log('SUCCESS!', response.status, response.text);
+      const response = await emailjs.send(serviceId, templateId, templateParams, userId);
+
+      if (response.status === 200) {
         setFormData({ name: '', email: '', message: '' });
         setStatus({
           submitted: true,
           submitting: false,
-          info: { error: false, msg: 'Message envoyé avec succès!' }
+          info: { error: false, msg: 'Message envoyé avec succès! Nous vous répondrons bientôt.' }
         });
+
         setTimeout(() => {
           setStatus({
             submitted: false,
@@ -74,20 +90,27 @@ export default function ContactPage() {
             info: { error: false, msg: null }
           });
         }, 5000);
-      })
-      .catch(error => {
-        console.log('FAILED...', error);
+      }
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      setStatus({
+        submitted: false,
+        submitting: false,
+        info: { error: true, msg: 'Erreur lors de l\'envoi. Veuillez réessayer ou nous contacter directement.' }
+      });
+
+      setTimeout(() => {
         setStatus({
           submitted: false,
           submitting: false,
-          info: { error: true, msg: 'Une erreur est survenue. Veuillez réessayer.' }
+          info: { error: false, msg: null }
         });
-      });
+      }, 7000);
+    }
   };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Header animation
       gsap.from(headerRef.current.children, {
         y: 30,
         opacity: 0,
@@ -101,7 +124,6 @@ export default function ContactPage() {
         }
       });
 
-      // Form animation
       gsap.from(formRef.current.children, {
         y: 40,
         opacity: 0,
@@ -122,7 +144,6 @@ export default function ContactPage() {
 
   return (
     <section ref={sectionRef} className="bg-gradient-to-b from-gray-950 to-gray-900 min-h-screen py-28 relative overflow-hidden">
-      {/* Back to Home Button */}
       <div className="absolute top-8 left-8 z-20">
         <button
           onClick={handleBackToHome}
@@ -133,7 +154,6 @@ export default function ContactPage() {
         </button>
       </div>
 
-      {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-32 right-1/3 w-96 h-96 rounded-full bg-blue-500/5 mix-blend-multiply blur-3xl"></div>
         <div className="absolute -bottom-32 left-1/4 w-96 h-96 rounded-full bg-indigo-500/5 mix-blend-multiply blur-3xl"></div>
@@ -157,22 +177,22 @@ export default function ContactPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-4xl mx-auto">
-          {/* Contact Form */}
           <div ref={formRef} className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
             <form className="space-y-6" onSubmit={handleSubmit}>
               {status.info.error && (
-                <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
-                  {status.info.msg}
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                  ❌ {status.info.msg}
                 </div>
               )}
               {status.submitted && !status.info.error && (
-                <div className="p-3 bg-green-500/20 border border-green-500/50 rounded-lg text-green-300 text-sm">
-                  {status.info.msg}
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
+                  ✅ {status.info.msg}
                 </div>
               )}
+
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300">
-                  Nom complet
+                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                  Nom complet *
                 </label>
                 <input
                   type="text"
@@ -180,15 +200,15 @@ export default function ContactPage() {
                   id="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="mt-2 block w-full rounded-lg bg-gray-900/50 border border-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Votre nom"
+                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="Votre nom complet"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300">
-                  Email
+                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  Email *
                 </label>
                 <input
                   type="email"
@@ -196,24 +216,24 @@ export default function ContactPage() {
                   id="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="mt-2 block w-full rounded-lg bg-gray-900/50 border border-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="votre@email.com"
+                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  placeholder="votre.email@exemple.com"
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300">
-                  Message
+                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                  Message *
                 </label>
                 <textarea
                   id="message"
                   name="message"
-                  rows={4}
+                  rows={5}
                   value={formData.message}
                   onChange={handleInputChange}
-                  className="mt-2 block w-full rounded-lg bg-gray-900/50 border border-gray-700 px-4 py-3 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Décrivez votre projet..."
+                  className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-vertical"
+                  placeholder="Décrivez votre projet ou votre demande..."
                   required
                 />
               </div>
@@ -221,14 +241,28 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={status.submitting}
-                className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-lg hover:translate-y-[-2px] disabled:opacity-70 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
               >
-                {status.submitting ? 'Envoi en cours...' : 'Envoyer le message'}
+                {status.submitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Envoi en cours...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                    <span>Envoyer le message</span>
+                  </>
+                )}
               </button>
             </form>
           </div>
 
-          {/* Contact Information */}
           <div className="space-y-8">
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
               <h3 className="text-xl font-semibold text-white mb-4">Informations de contact</h3>
@@ -241,7 +275,12 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-300">Email</p>
-                    <a href="mailto:contact@pfema.com" className="text-blue-400 hover:text-blue-300">contact@pfema.com</a>
+                    <a
+                      href="mailto:contact@pfema.com"
+                      className="text-blue-400 hover:text-blue-300 transition-colors duration-200"
+                    >
+                      contact@pfema.com
+                    </a>
                   </div>
                 </div>
 
@@ -255,7 +294,7 @@ export default function ContactPage() {
                     <p className="text-sm font-medium text-gray-300">WhatsApp</p>
                     <button
                       onClick={handleWhatsAppClick}
-                      className="text-green-400 hover:text-green-300"
+                      className="text-green-400 hover:text-green-300 transition-colors duration-200"
                     >
                       +212 694 019 452
                     </button>
@@ -267,9 +306,18 @@ export default function ContactPage() {
             <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 border border-gray-700/50">
               <h3 className="text-xl font-semibold text-white mb-4">Horaires de disponibilité</h3>
               <div className="space-y-2 text-gray-300">
-                <p>Lundi - Vendredi: 9h00 - 18h00</p>
-                <p>Samedi: 10h00 - 16h00</p>
-                <p>Dimanche: Fermé</p>
+                <div className="flex justify-between items-center py-1">
+                  <span>Lundi - Vendredi:</span>
+                  <span className="text-green-400 font-medium">9h00 - 18h00</span>
+                </div>
+                <div className="flex justify-between items-center py-1">
+                  <span>Samedi:</span>
+                  <span className="text-yellow-400 font-medium">10h00 - 16h00</span>
+                </div>
+                <div className="flex justify-between items-center py-1">
+                  <span>Dimanche:</span>
+                  <span className="text-red-400 font-medium">Fermé</span>
+                </div>
               </div>
             </div>
           </div>
